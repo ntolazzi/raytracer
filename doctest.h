@@ -24,7 +24,7 @@
 // The concept of subcases (sections in Catch) and expression decomposition are from there.
 // Some parts of the code are taken directly:
 // - stringification - the detection of "ostream& operator<<(ostream&, const T&)" and StringMaker<>
-// - the Approx() helper class for floating point comparison
+// - the Approx() helper class for floating Point comparison
 // - colors in the console
 // - breaking into a debugger
 // - signal / SEH handling
@@ -3870,7 +3870,7 @@ if(std::uncaught_exception()
             // make a new name with an appended type for templated test case
             if(m_template_id != -1) {
                 m_full_name = String(m_name) + m_type;
-                // redirect the name to point to the newly constructed full name
+                // redirect the name to Point to the newly constructed full name
                 m_name = m_full_name.c_str();
             }
             return *this;
@@ -4340,7 +4340,7 @@ namespace {
             };
     SignalDefs signalDefs[] = {{SIGINT, "SIGINT - Terminal interrupt signal"},
                                {SIGILL, "SIGILL - Illegal instruction signal"},
-                               {SIGFPE, "SIGFPE - Floating point error signal"},
+                               {SIGFPE, "SIGFPE - Floating Point error signal"},
                                {SIGSEGV, "SIGSEGV - Segmentation violation signal"},
                                {SIGTERM, "SIGTERM - Termination request signal"},
                                {SIGABRT, "SIGABRT - Abort (abnormal termination) signal"}};

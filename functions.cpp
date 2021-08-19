@@ -24,11 +24,3 @@ bool equal(Tuple a, Tuple b){
     }
     return true;
 }
-
-Tuple point(float x, float y, float z){
-    return {x, y, z, 1.0};
-}
-
-Tuple vector(float x, float y, float z){
-    return {x, y, z, 0.0};
-}

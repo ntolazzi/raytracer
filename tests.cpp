@@ -14,40 +14,65 @@ TEST_CASE("Tuple Test"){
         CHECK(t.is_vector == false);
     }
     SUBCASE("Tuple Factories"){
-        Tuple p = point(4, -4, 3);
-        Tuple v = vector(4, -4, 3);
+        Tuple p = Point(4, -4, 3);
+        Tuple v = Vector(4, -4, 3);
+        Tuple c = Color(0.5, 0.5, 0.3);
         CHECK(equal(p, Tuple(4, -4, 3, 1)));
         CHECK(equal(v, Tuple(4, -4, 3, 0)));
+        CHECK(equal(c, Tuple(0.5, 0.5, 0.3, 0.0)));
     }
     SUBCASE("Arithmetic Operations"){
         Tuple a(3, -2, 5, 1);
         Tuple b(-2, 3, 1, 0);
-        Tuple p1 = point(3, 2, 1);
-        Tuple p2 = point(5, 6, 7);
-        Tuple v1 = vector(3, 2, 1);
-        Tuple v2 = vector(5, 6, 7);
-        Tuple zero = vector(0, 0, 0);
-        Tuple v3 = vector(1, -2, 3);
+        Tuple p1 = Point(3, 2, 1);
+        Tuple p2 = Point(5, 6, 7);
+        Tuple v1 = Vector(3, 2, 1);
+        Tuple v2 = Vector(5, 6, 7);
+        Tuple zero = Vector(0, 0, 0);
+        Tuple v3 = Vector(1, -2, 3);
         CHECK(equal(a+b, Tuple(1, 1, 6, 1)));
-        CHECK(equal(p1-p2, vector(-2, -4, -6)));
-        CHECK(equal(p1-v2, point(-2, -4, -6)));
-        CHECK(equal(v1-v2, vector(-2, -4, -6)));
-        CHECK(equal(zero - v3, vector(-1, 2, -3)));
-        CHECK(equal(-v2, vector(-5, -6, -7)));
-        CHECK(equal(v1*5.0, vector(15, 10, 5)));
-        CHECK(equal(v1/2.0, vector(1.5, 1.0, 0.5)));
+        CHECK(equal(p1-p2, Vector(-2, -4, -6)));
+        CHECK(equal(p1-v2, Point(-2, -4, -6)));
+        CHECK(equal(v1-v2, Vector(-2, -4, -6)));
+        CHECK(equal(zero - v3, Vector(-1, 2, -3)));
+        CHECK(equal(-v2, Vector(-5, -6, -7)));
+        CHECK(equal(v1*5.0, Vector(15, 10, 5)));
+        CHECK(equal(v1/2.0, Vector(1.5, 1.0, 0.5)));
 
-        CHECK(equal(vector(1, 2, 3).norm(),
-                    vector(1.0/std::sqrt(14), 2.0/std::sqrt(14), 3.0/std::sqrt(14))));
+        CHECK(equal(Vector(1, 2, 3).norm(),
+                    Vector(1.0 / std::sqrt(14), 2.0 / std::sqrt(14), 3.0 / std::sqrt(14))));
     }
     SUBCASE("Member functions"){
-        CHECK(vector(0, 1, 0).len() == doctest::Approx(1.0));
-        CHECK(vector(0, 0, 1).len() == doctest::Approx(1.0));
-        CHECK(vector(1, 2, 3).len() == doctest::Approx(std::sqrt(14)));
-        CHECK(vector(-1, -2, -3).len() == doctest::Approx(std::sqrt(14)));
+        CHECK(Vector(0, 1, 0).len() == doctest::Approx(1.0));
+        CHECK(Vector(0, 0, 1).len() == doctest::Approx(1.0));
+        CHECK(Vector(1, 2, 3).len() == doctest::Approx(std::sqrt(14)));
+        CHECK(Vector(-1, -2, -3).len() == doctest::Approx(std::sqrt(14)));
 
-        CHECK(vector(1, 2, 3)*vector(2, 3, 4) == doctest::Approx(20));
-        CHECK(equal(vector(1, 2, 3).cross(vector(2, 3, 4)), vector(-1, 2, -1)));
-        CHECK(equal(vector(2, 3, 4).cross(vector(1, 2, 3)), vector(1, -2, 1)));
+        CHECK(Vector(1, 2, 3).dot(Vector(2, 3, 4)) == doctest::Approx(20));
+        CHECK(equal(Vector(1, 2, 3).cross(Vector(2, 3, 4)), Vector(-1, 2, -1)));
+        CHECK(equal(Vector(2, 3, 4).cross(Vector(1, 2, 3)), Vector(1, -2, 1)));
     }
+    SUBCASE("Color tests"){
+        Tuple c1 = Color(0.9, 0.6, 0.75);
+        Tuple c2 = Color(0.7, 0.1, 0.25);
+        CHECK(equal(c1+c2, Color(1.6, 0.7, 1.0)));
+        CHECK(equal(c1-c2, Color(0.2, 0.5, 0.5)));
+        CHECK(equal(c1*2, Color(1.8, 1.2, 1.5)));
+        CHECK(equal(c1*c2, Color(0.9*0.7, 0.6*0.1, 0.75*0.25)));
+    }
+}
+TEST_CASE("Canvas Test"){
+    Canvas canvas(10, 20);
+    CHECK(canvas.width == 10);
+    CHECK(canvas.height == 20);
+
+    for(unsigned int i=0;i<canvas.width;++i){
+        for(unsigned int j=0;j<canvas.height;++j){
+            CHECK(equal(canvas[i][j], Color(0, 0, 0)));
+        }
+    }
+
+    canvas[5][7] = Color(0.3, 0.5, 0.7);
+    CHECK(equal(canvas[5][7], Color(0.3, 0.5, 0.7)));
+
 }
