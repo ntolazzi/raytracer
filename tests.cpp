@@ -76,3 +76,46 @@ TEST_CASE("Canvas Test"){
     CHECK(equal(canvas[5][7], Color(0.3, 0.5, 0.7)));
 
 }
+
+TEST_CASE("Matrix Test"){
+    Matrix id_matrix = IdentityMatrix();
+    CHECK(id_matrix.data[2][2] == doctest::Approx(1));
+    Matrix m1 = Matrix(1, 2, 3, 4,
+                       5, 6, 7, 8,
+                       9, 8, 7, 6,
+                       5, 4, 3, 2);
+    Matrix m2 = Matrix(-2, 1, 2, 3,
+                       3, 2, 1, -1,
+                       4, 3, 6, 5,
+                       1, 2, 7, 8);
+    Matrix m3 = Matrix(1, 2, 3, 4,
+                       2, 4, 4, 2,
+                       8, 6, 4, 1,
+                       0, 0, 0, 1);
+    Tuple t(1, 2, 3, 1);
+    CHECK(equal(m1, Matrix(1, 2, 3, 4,
+                           5, 6, 7, 8,
+                           9, 8, 7, 6,
+                           5, 4, 3, 2)));
+    CHECK(!equal(m1, Matrix(1, 2, 3, 4,
+                           5, 6, 6, 8,
+                           9, 8, 7, 6,
+                           5, 4, 3, 2)));
+    // matrix-matrix multiplication
+    CHECK(equal(m1*m2, Matrix(20, 22, 50, 48,
+                              44, 54, 114, 108,
+                              40, 58, 110, 102,
+                              16, 26, 46, 42)));
+
+    CHECK(equal(m3*t, Tuple(18, 24, 33, 1)));
+    CHECK(equal(m3*id_matrix, m3));
+    CHECK(equal(id_matrix*m3, m3));
+    CHECK(equal(id_matrix*t, t));
+    CHECK(equal(m3.transposed(), Matrix(1, 2, 8, 0,
+                                        2, 4, 6, 0,
+                                        3, 4, 4, 0,
+                                        4, 2, 1, 1)));
+//    Matrix trans = Translation(5, -3, 2);
+//    Tuple p = Point(-3, 4, 5);
+//    CHECK(equal(trans*p, Point(2, 1, 7)));
+}

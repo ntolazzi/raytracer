@@ -24,3 +24,15 @@ bool equal(Tuple a, Tuple b){
     }
     return true;
 }
+
+bool equal(Matrix a, Matrix b) {
+    for(unsigned i = 0;i<4;i++){
+        for(unsigned j=0;j<4;j++){
+            if(std::abs(a.data[i][j]-b.data[i][j])>EPSILON){
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
