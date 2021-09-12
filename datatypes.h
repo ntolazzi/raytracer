@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <initializer_list>
 
 constexpr float EPSILON = 0.00001;
 
@@ -26,15 +27,16 @@ struct Tuple{
 };
 
 struct Matrix{
-    float data [4][4];
-    Matrix(float c00, float c01, float c02, float c03,
-           float c10, float c11, float c12, float c13,
-           float c20, float c21, float c22, float c23,
-           float c30, float c31, float c32, float c33);
-    Matrix();
+    unsigned int dim;
+    std::vector<float>& operator[](int);
+    std::vector<std::vector<float>> data;
+    Matrix(std::initializer_list<float> coefficients);
+    Matrix(unsigned int dim);
+    Matrix(const Matrix& other);
     Tuple operator*(const Tuple& other) const;
     Matrix operator*(const Matrix& other) const;
     Matrix transposed() const;
+    float determinant() const;
 };
 
 struct Canvas{

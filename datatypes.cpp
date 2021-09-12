@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 
+
 #include "datatypes.h"
 #include "functions.h"
 
@@ -125,46 +126,39 @@ bool Canvas::save(std::string filename) {
     return true;
 }
 
-Matrix::Matrix(float c00, float c01, float c02,float c03,
-               float c10, float c11, float c12, float c13,
-               float c20, float c21, float c22, float c23,
-               float c30, float c31, float c32, float c33){
-    data[0][0] = c00;
-    data[0][1] = c01;
-    data[0][2] = c02;
-    data[0][3] = c03;
-
-    data[1][0] = c10;
-    data[1][1] = c11;
-    data[1][2] = c12;
-    data[1][3] = c13;
-
-    data[2][0] = c20;
-    data[2][1] = c21;
-    data[2][2] = c22;
-    data[2][3] = c23;
-
-    data[3][0] = c30;
-    data[3][1] = c31;
-    data[3][2] = c32;
-    data[3][3] = c33;
+Matrix::Matrix(std::initializer_list<float> coefficients) {
+    if(coefficients.size()!=16 && coefficients.size()!=9 && coefficients.size()!=4){
+        throw std::invalid_argument("Size must be between either 2x2, 3x3 or 4x4");
+    }
+    dim = std::lround(sqrt(coefficients.size()));
+    data.reserve(dim);
+    for(unsigned int i=0;i<dim;++i){
+        for(unsigned int j=0;j<dim;++j){
+            data[i].push_back(*(coefficients.begin()+i*dim+j));
+        }
+    }
 }
+
 
 // matrix-matrix multiplication
 Matrix Matrix::operator*(const Matrix& other) const {
-    Matrix result;
-    for(unsigned row = 0; row < 4; row++){
-        for(unsigned col = 0; col < 4; col++){
-            result.data[row][col] = data[row][0]*other.data[0][col] +
-                                    data[row][1]*other.data[1][col] +
-                                    data[row][2]*other.data[2][col] +
-                                    data[row][3]*other.data[3][col];
+    Matrix result(dim);
+    for(unsigned int row = 0; row < dim; row++){
+        for(unsigned int col = 0; col < dim; col++){
+            float sum = 0.0;
+            for(unsigned int idx = 0; idx < dim; idx++){
+                sum += data[row][idx]*other.data[idx][col];
+            }
+            result.data[row][col] = sum;
         }
     }
     return result; //hopefully NRVO happens, too lazy to test right now
 }
 // matrix-vector multiplication
 Tuple Matrix::operator*(const Tuple& other) const {
+    if(dim !=4){
+        throw std::logic_error("Not supported for other than 4x4 vectors");
+    }
     float result[4];
     for(unsigned row = 0; row < 4; row++){
         Tuple row_vector(data[row][0], data[row][1], data[row][2], data[row][3]);
@@ -173,35 +167,59 @@ Tuple Matrix::operator*(const Tuple& other) const {
     return Tuple(result[0], result[1], result[2], result[3]); //hopefully NRVO happens, too lazy to test right now
 }
 
-Matrix::Matrix() {
-    for(unsigned i = 0; i<4; i++){
-        for(unsigned j = 0; j<4; j++){
-            data[i][j] = 0;
+Matrix::Matrix(unsigned int dim) : dim(dim){
+    data.reserve(dim);
+    for(unsigned int i=0;i<dim;++i){
+        for(unsigned int j=0;j<dim;++j){
+            data[i].push_back(0);
         }
     }
 }
 
 Matrix Matrix::transposed() const {
-    Matrix result;
-    for(unsigned i = 0; i<4; i++){
-        for(unsigned j = 0; j<4; j++){
+    Matrix result(dim);
+    for(unsigned i = 0; i<dim; i++){
+        for(unsigned j = 0; j<dim; j++){
             result.data[i][j] = data[j][i];
         }
     }
     return result;
 }
 
+std::vector<float>& Matrix::operator[](int idx) {
+    return data[idx];
+}
+
+Matrix::Matrix(const Matrix& other) {
+    dim = other.dim;
+    data.reserve(dim);
+    for(unsigned i = 0; i<dim; i++){
+        for(unsigned j = 0; j<dim; j++) {
+            float val = other.data.at(i).at(j);
+            data[i].push_back(val);
+            std::cout << "Copy: " << val << std::endl;
+        }
+    }
+    std::cout << "Done" <<std::endl;
+}
+
+
+
+//float Matrix::determinant() const {
+//    return data[1][1]*data[1][1]*data[1][1]*data[1][1] +
+//}
+
 
 Matrix IdentityMatrix() {
-    return {1, 0, 0, 0,
+    return Matrix({1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
-            0, 0, 0, 1};
+            0, 0, 0, 1});
 }
 
 Matrix Translation(float x, float y, float z) {
-    return {1, 0, 0, x,
+    return Matrix({1, 0, 0, x,
             0, 1, 0, y,
             0, 0, 1, z,
-            0, 0, 0, 1};
+            0, 0, 0, 1});
 }

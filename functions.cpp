@@ -26,8 +26,11 @@ bool equal(Tuple a, Tuple b){
 }
 
 bool equal(Matrix a, Matrix b) {
-    for(unsigned i = 0;i<4;i++){
-        for(unsigned j=0;j<4;j++){
+    if(a.dim != b.dim){
+        return false;
+    }
+    for(unsigned i = 0;i<a.dim;++i){
+        for(unsigned j=0;j<a.dim;++j){
             if(std::abs(a.data[i][j]-b.data[i][j])>EPSILON){
                 return false;
             }
